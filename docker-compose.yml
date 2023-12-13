@@ -25,6 +25,7 @@ services:
       DB_NAME: api_docker
       DB_USER: roger
       DB_PASS: regor
+      SERVER_PORT: 23000
 
   adminer:
     image: adminer
