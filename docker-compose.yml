@@ -1,0 +1,33 @@
+version: '3.1'
+
+services:
+
+  bdd:
+    image: mariadb:latest
+    restart: always
+    volumes:
+      - ./mysql:/var/lib/mysql
+    ports:
+      - 3306:3306
+    environment:
+      MARIADB_ROOT_PASSWORD: toor
+      MARIADB_DATABASE: api_docker
+      MARIADB_USER: roger
+      MARIADB_PASSWORD: regor
+
+  api:
+    image: api_docker_sonar
+    restart: always
+    ports:
+      - 23000:23000
+    environment:
+      DB_HOST: bdd
+      DB_NAME: api_docker
+      DB_USER: roger
+      DB_PASS: regor
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080

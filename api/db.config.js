@@ -26,6 +26,6 @@ db.User = require('./models/user_m')(sequelize)
 // })
 
 // Attention en cas de test le pool reste actif un moment MODE DEV
-// db.sequelize.sync({alter: true})
+db.sequelize.sync({ alter: true })
 
 module.exports = db
