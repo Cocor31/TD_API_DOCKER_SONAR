@@ -1,0 +1,75 @@
+name: Integration continue
+
+on:
+    push:
+        branches: ["main"]
+    pull_request:
+        branches: ["main"]
+
+jobs:
+    routage:
+        if: ${{ !contains(github.event.head_commit.message, '#code')}}
+        runs-on: ubuntu-latest
+
+        services:
+            mariadb:
+                image: mariadb:latest
+                env:
+                    MARIADB_ROOT_PASSWORD: toor
+                    MARIADB_DATABASE: test
+                    MARIADB_USER: test
+                    MARIADB_PASSWORD: test
+                ports:
+                    - 3306:3306
+                options: --health-cmd="healthcheck.sh --connect --innodb_initialized" --health-interval=10s --health-timeout=5s --health-retries=3
+
+        env:
+            DB_HOST: 127.0.0.1
+            DB_NAME: test
+            DB_USER: test
+            DB_PASS: test
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+
+            - name: Check database connection
+              run: |
+                sudo apt-get install -y mysql-client
+                mysql --host 127.0.0.1 --port 3306 -u root -ptoor -e "SHOW DATABASES"
+
+            - name: Setup node
+              uses: actions/setup-node@v3
+              with:
+                node-version: 18.x
+            - name: Install Dependencies
+              run: npm i
+
+            - name: Init database
+              run: npm run test:file init_bdd
+
+            - name: Run Main Test
+              run: npm run test:file main_route   
+
+            - name: Run User test
+              run : npm run test:file user_route
+    
+    deployDocker:
+        needs: [routage]
+        if: ${{ github.event_name == 'push' && github.ref_name == 'main'}} 
+        runs-on: ubunto-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3	
+            - name: Setup Node
+              uses: actions/setup-node@v3
+              with:
+                node-version: 18.x
+            - name: Start deployement
+              run: echo OK to Deploy
+
+    # deployDocker:
+    #     needs: [routage]
+    #     if: ${{ github.event_name == 'push' && github.ref_name == 'main'}}        
+    #     uses: ./.github/workflows/cd_docker.yml
+    #     secrets: inherit
