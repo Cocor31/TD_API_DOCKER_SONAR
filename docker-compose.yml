@@ -16,7 +16,7 @@ services:
       MARIADB_PASSWORD: regor
 
   api:
-    image: api_docker_sonar
+    image: cocor31/api_docker:main
     restart: always
     ports:
       - 23000:23000
