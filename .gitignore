@@ -4,5 +4,4 @@ mysql
 .scannerwork
 scripts/opt
 coverage/
-test
 docker-compose.yml
