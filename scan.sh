@@ -1,6 +1,6 @@
 export SONAR_HOST=172.17.0.2:9000
-export SONAR_TOKEN=4be685c939a1a8ca0184c6b09281881521ecdd86
-export PROJECT_KEY=apidocker
+export SONAR_TOKEN=4cbcdd24c4157025698b2998564b104f4f317e9c
+export PROJECT_KEY=apitestsonar
 export REPO=$(pwd)
 export CONFIG_FILE=$(pwd)/sonar-project.properties
 
