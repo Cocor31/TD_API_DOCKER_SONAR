@@ -6,4 +6,4 @@ WORKDIR /app
 RUN npm i --omit=dev
 
 EXPOSE 23000
-CMD npm run sync:db; npm run start
+CMD npm run start
