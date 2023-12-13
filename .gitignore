@@ -5,5 +5,4 @@ mysql
 scripts/opt
 coverage/
 test
-sonar-project.properties
 docker-compose.yml
