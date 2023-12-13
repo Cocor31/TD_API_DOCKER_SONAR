@@ -65,5 +65,5 @@ jobs:
               with:
                 node-version: 18.x
             - name: Start Deployement
-              run: echo Deploy
+              run: echo Ready to Deploy
 
