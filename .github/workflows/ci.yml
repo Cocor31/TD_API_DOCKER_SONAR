@@ -54,16 +54,9 @@ jobs:
             - name: Run User test
               run : npm run test:file user_route
     
-    deploy:
+    deployDocker:
         needs: [routage]
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v3
-            - name: Setup Node
-              uses: actions/setup-node@v3
-              with:
-                node-version: 18.x
-            - name: Start Deployement
-              run: echo Ready to Deploy
+        if: ${{ github.event_name == 'push' && github.ref_name == 'main'}}        
+        uses: ./.github/workflows/cd_docker.yml
+        secrets: inherit
 
