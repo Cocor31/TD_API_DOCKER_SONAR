@@ -54,22 +54,16 @@ jobs:
             - name: Run User test
               run : npm run test:file user_route
     
-    deployDocker:
+    deploy:
         needs: [routage]
-        if: ${{ github.event_name == 'push' && github.ref_name == 'main'}} 
-        runs-on: ubunto-latest
+        runs-on: ubuntu-latest
         steps:
             - name: Checkout
-              uses: actions/checkout@v3	
+              uses: actions/checkout@v3
             - name: Setup Node
               uses: actions/setup-node@v3
               with:
                 node-version: 18.x
-            - name: Start deployement
-              run: echo OK to Deploy
+            - name: Start Deployement
+              run: echo Deploy
 
-    # deployDocker:
-    #     needs: [routage]
-    #     if: ${{ github.event_name == 'push' && github.ref_name == 'main'}}        
-    #     uses: ./.github/workflows/cd_docker.yml
-    #     secrets: inherit
