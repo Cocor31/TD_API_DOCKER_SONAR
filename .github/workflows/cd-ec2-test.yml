@@ -36,11 +36,11 @@ jobs:
     
         steps:
           - name: Checkout code
-            uses: actions/checkout@v2
-          - name: Configure SSH
-            uses: webfactory/ssh-agent@v0.5.1
-            with:
-              ssh-private-key: ${{ secrets.SSH_KEY }}
+            uses: actions/checkout@v3
+          # - name: Configure SSH
+          #   uses: webfactory/ssh-agent@v0.5.1
+          #   with:
+          #     ssh-private-key: ${{ secrets.SSH_KEY }}
           - name: copy via ssh key
             uses: appleboy/scp-action@v0.1.4
             with:
@@ -48,7 +48,7 @@ jobs:
               username: ${{ secrets.HOST_USERNAME }}
               port: 22
               key: ${{ secrets.SSH_KEY }}
-              source: "api/*"
+              source: "./*"
               target: "."    
           # - name: Deploy to EC2
           #   run: |
