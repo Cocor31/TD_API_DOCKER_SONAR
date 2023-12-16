@@ -30,23 +30,22 @@ jobs:
             push: true
             tags: ${{ steps.meta.outputs.tags }}
             labels: ${{ steps.meta.outputs.label }}
-    compose:
+    send_compose:
         needs: [push]
         runs-on: ubuntu-latest
     
         steps:
-            - name: Checkout
-              uses: actions/checkout@v3
-    
-            - name: copy file via ssh key
-              uses: appleboy/scp-action@master
-              with:
-                host: ${{ secrets.SERVER_HOST }}
-                username: ${{ secrets.SERVER_NAME }}
-                port: ${{ secrets.SERVER_PORT }}
-                key: ${{ secrets.SSH_KEY }}
-                source: "./docker-compose.yml"
-                target: "."
+          - name: Checkout code
+            uses: actions/checkout@v3
+          - name: copy via ssh key
+            uses: appleboy/scp-action@v0.1.4
+            with:
+              host: ${{ secrets.SERVER_HOST }}
+              username: ${{ secrets.HOST_USERNAME }}
+              port: 22
+              key: ${{ secrets.SSH_KEY }}
+              source: "./docker-compose.yml"
+              target: "."  
                 
           
  

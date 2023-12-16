@@ -48,7 +48,7 @@ jobs:
               username: ${{ secrets.HOST_USERNAME }}
               port: 22
               key: ${{ secrets.SSH_KEY }}
-              source: "./*"
+              source: "./docker-compose.yml"
               target: "."    
           # - name: Deploy to EC2
           #   run: |
