@@ -40,7 +40,7 @@ jobs:
           - name: Configure SSH
             uses: webfactory/ssh-agent@v0.5.1
             with:
-              ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+              ssh-private-key: ${{ secrets.SSH_KEY }}
           - name: copy nginx.conf via ssh key
             uses: appleboy/scp-action@v0.1.4
             with:
