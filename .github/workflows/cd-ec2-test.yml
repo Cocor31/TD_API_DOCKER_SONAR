@@ -56,7 +56,7 @@ jobs:
         #   #     ssh -o "StrictHostKeyChecking=no" ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 'bash -s' < deploy.sh
 
         steps:
-          - uses: actions/checkout@v2
+          - uses: actions/checkout@v3
           - name: Build & Deploy
             env:
               PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
