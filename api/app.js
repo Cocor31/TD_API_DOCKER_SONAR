@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: true }))
 const user_router = require('./routes/user_r')
 
 /*** MAIN ROUTER */
-app.get('/', (req, res) => res.send(`I'm online. All is OK ! Test Deploy `))
+app.get('/', (req, res) => res.send(`I'm online. All is OK ! `))
 
 app.use('/users', user_router)
 
