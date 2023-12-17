@@ -1,0 +1,427 @@
+##############################################################################
+#	        Docker
+##############################################################################
+
+#=====================================	
+#	Memo Commande Docker
+#=====================================
+
+--------------------------		
+	Build
+--------------------------
+docker build -t <nom_image> .
+
+--------------------------		
+	Run
+--------------------------
+docker run -dp 127.0.0.1:3000:3000 <nom_image>
+docker run -p 8081:80 -v /home/florian/niort/docker/web:/usr/share/nginx/html:ro -d nginx
+
+--------------------------		
+	Lister images
+--------------------------
+docker image list
+docker image ls
+
+--------------------------		
+	Supprimer omage
+--------------------------
+docker rmi <image-id>
+
+--------------------------		
+	Lister processus
+--------------------------
+docker ps
+
+--------------------------		
+	Stopper processus
+--------------------------
+docker stop <the-container-id>
+
+--------------------------		
+	Supprimer processus
+--------------------------
+docker rm <the-container-id>
+docker rm -f <the-container-id>         <=  Pour arreter et supprimer en même temps avec le -f pour "force"
+
+--------------------------		
+	Push image
+--------------------------
+add tag on image:
+docker tag getting-started YOUR-USER-NAME/getting-started
+
+push:
+docker push YOUR-USER-NAME/getting-started
+
+--------------------------		
+	Utilisation volume
+--------------------------
+créer un volume
+docker volume create todo-db
+
+lancer docker avec le volume:
+docker run -dp 127.0.0.1:3000:3000 --mount type=volume,src=todo-db,target=/etc/todos getting-started
+
+show volume detail with actual location of the data on the disk:
+docker volume inspect todo-db
+
+
+
+Voir la suite de la doc Docker page 6
+https://docs.docker.com/get-started/05_persisting_data/
+
+######################################################################################
+
+
+Ma vidéo:
+	BDD_DOCKER.mkv
+
+#=====================================	
+#	Installation
+#=====================================
+Installer docker Desktop  et paramétrer Ressources WSL dans Settings/Ressources/WSL Integration
+
+#=====================================	
+#	Docker
+#=====================================
+
+On créer un fichier html dans le dossier /home/florian/niort/docker/web
+
+lancer un conteneur server web nginx
+	docker run -p 8081:80 -v /home/florian/niort/docker/web:/usr/share/nginx/html:ro -d nginx
+
+voir les processus docker en cours:
+	docker ps
+	
+#=====================================	
+#	Docker compose
+#=====================================
+
+créer fichier yml à la racine de notre projet :
+docker-compose.yml
+
+y mettre:
+-----------------------------------------------------
+# Use root/example as user/password credentials
+version: '3.1'
+
+services:
+
+  db:
+    image: mariadb
+    restart: always
+	volumes:
+	  - ./mysql:/var/lib/mysql
+    environment:
+      MARIADB_ROOT_PASSWORD: TOOR
+	  MARIADB_DATABASE: marcelus
+	  MARIADB_USER: marcel
+	  MARIADB_PASSWORD: roger
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+------------------------------------------------------
+
+./mysql => chemin relatif dans lequel sera créer la base de donnée en local sur mon PC
+
+se placer dans le dossier où le fichier .yml est
+	=> ici /home/florian/niort/docker/web
+	
+lancer le conteneur:
+	docker compose up -d        =>    le -d pour détacher (mettre en tache de fond et libérer notre terminal)
+	
+
+
+Aller sur browser
+	localhost:8080
+
+entrer les mots de passes:
+	service:db
+	...
+	
+	
+éteindre les dockers
+	docker compose down
+
+nettoyer tout son docker (attention supprime tout)
+	docker system prune -a
+	
+	
+#=====================================	
+#	Créer un docker avec son projet
+#=====================================
+
+créer projet API_SONAR
+
+npm init
+npm i cors dotenv express sequelize mysql2
+
+créer une api dans dossier API_SONAR/api avec sous dossier controllers, models, routes
+on a nos parmetres MARIADB dans le .env
+
+--------------------------		
+	Créer un image docker
+--------------------------
+
+créer docker file à la racine du projet:
+	Dockerfile
+	
+mettre dedans le contenu:
+
+FROM node:18-alpine
+
+ADD . /app
+WORKDIR /app
+
+RUN npm i
+
+EXPOSE 23000
+CMD npm run start
+
+--------------------------		
+	Créer dockeringnore
+--------------------------
+.dockerignore
+
+ajouter :
+	node_modules
+	mysql           <=   dossier local de la base de données qui sera créer au lancement de notre docker
+	
+--------------------------		
+	Construire docker
+--------------------------
+lancer commande à la racine du projet où se trouve le fichier Dockerfile
+	docker build -t marcelus .
+
+lister les image docker
+	docker image list
+=> il y a bien l'image marcelus créer
+
+
+--------------------------		
+	Créer docker compose
+--------------------------
+
+créer fichier docker-compose.yml
+
+mettre le contenu:
+
+-----------------------------------------------------
+# Use root/example as user/password credentials
+version: '3.9'
+
+services:
+
+  bdd:
+    image: mariadb:latest
+    restart: always
+	volumes:
+	  - ./mysql:/var/lib/mysql
+    environment:
+      MARIADB_ROOT_PASSWORD: TOOR
+	  MARIADB_DATABASE: trucmuche
+	  MARIADB_USER: machin
+	  MARIADB_PASSWORD: chouette
+
+  api:
+    image: marcelus
+    restart: always
+    ports:
+      - 23000:23000
+	environment:
+	  DB_HOST: bdd
+	  DB_NAME: trucmuche
+	  DB_USER: machin
+	  DB_PASS: chouette
+	  
+  adminer:
+    image: adminer
+	restart: always
+	ports:
+      - 8080:8080
+------------------------------------------------------
+
+marcelus existe déja sur mon poste en local car j'ai fait le build
+
+
+--------------------------		
+	lancer docker compose
+--------------------------
+lancer image docker
+	docker compose up -d
+	
+
+--------------------------		
+	supprimer docker
+--------------------------
+
+docker rmi nom_image --force
+
+
+
+#=====================================	
+#	Créer un docker avec son projet envoyé sur DockerHub
+#=====================================
+
+créer projet API_SONAR
+
+npm init
+npm i cors dotenv express sequelize mysql2
+
+créer une api dans dossier API_SONAR/api avec sous dossier controllers, models, routes
+on a nos parmetres MARIADB dans le .env
+
+
+--------------------------		
+	Créer un image docker
+--------------------------
+
+créer docker file à la racine du projet:
+	Dockerfile
+	
+mettre dedans le contenu:
+--------------------
+FROM node:18-alpine
+
+ADD . /app
+WORKDIR /app
+
+RUN npm i --omit=dev                    			=> --omit=dev : sert à ne pas installer les dépendances dev
+
+EXPOSE 23000
+CMD npm run start
+--------------------
+
+
+--------------------------		
+	Créer dockeringnore
+--------------------------
+.dockerignore
+
+ajouter si besoin :
+	node_modules
+	mysql           <=   dossier local de la base de données qui sera créer au lancement de notre docker
+	test
+	coverage
+	Dockerfile
+	docker-compose.yml
+	.scannerwork
+	scan.sh
+	sonar-project.properties
+
+
+--------------------------		
+	Build docker de l'api
+--------------------------
+Pour créer l'image et tagger directement avant le push:
+	lancer commande à la racine du projet où se trouve le fichier Dockerfile
+	docker build -t cocor31/mon_test_api:v0 .
+
+Ou sinon en deux fois. Build + Tag (mais créé 2 images sur mon Docker Desktop: mon_test_api et cocor31/mon_test_api:v0 ):
+	docker build -t mon_test_api .
+	docker tag mon_test_api cocor31/mon_test_api:v0
+
+lister les images docker
+	docker image list
+=> il y a bien l'image api_docker créée
+
+
+--------------------------		
+	Push image api
+--------------------------	
+push:
+	docker push cocor31/mon_test_api:v0
+
+--------------------------		
+	Creation Docker Compose du projet  API + BDD + Adminer
+--------------------------
+
+créer nouveau dossier sur debian:
+y mettre un fichier "docker-compose.yml" avec ce contenu:
+-----------------------------------------------------
+version: '3.1'
+
+services:
+
+  bdd:
+    container_name: bdd
+    image: mariadb:latest
+    restart: always
+    volumes:
+      - ./mysql:/var/lib/mysql
+    ports:
+      - 3306:3306
+    environment:
+      MARIADB_ROOT_PASSWORD: toor
+      MARIADB_DATABASE: db_api
+      MARIADB_USER: roger
+      MARIADB_PASSWORD: regor
+
+  api:
+    container_name: api
+    image: cocor31/mon_test_api:v0
+    restart: always
+    ports:
+      - 23000:23000
+    environment:
+      DB_HOST: bdd
+      DB_NAME: db_api
+      DB_USER: roger
+      DB_PASS: regor
+      SERVER_PORT: 23000
+    depends_on:
+      bdd:
+        condition: service_started
+
+  adminer:
+    container_name: adminer
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+------------------------------------------------------
+
+
+--------------------------		
+	Lancer docker compose
+--------------------------
+lancer image docker
+	docker compose up -d
+
+--------------------------		
+	Vérifier que l'api fonctionne
+--------------------------
+aller sur l'url définie pour l'api:
+	http://localhost:23000/
+
+tester un GET:
+	http://localhost:23000/users
+
+tester PUT avec postman sur
+	http://localhost:23000/users
+
+--------------------------		
+	Aller sur Adminer
+--------------------------
+http://localhost:8080/
+
+entrer les élements de connexion mis dans le "docker-compose.yml"
+      Server: bdd
+	  Utilisateur: roger
+	  Mot de passe: regor
+      (optionnel ) Base de donnée: db_api
+	
+
+--------------------------		
+	Eteindre le Processus docker compose
+--------------------------
+	docker compose down
+	
+--------------------------		
+	supprimer image docker
+--------------------------
+
+docker rmi nom_image --force

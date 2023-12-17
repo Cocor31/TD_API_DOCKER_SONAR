@@ -1,0 +1,96 @@
+##############################################################################
+#		GIT	/GITHUB Debian
+##############################################################################		
+ voir vidéo Florian à partir de 1:18:00:
+ https://www.youtube.com/watch?v=OfS8zLH626A&list=PLwJWw4Pbl4w9bZcu6T57CYsxE95wSzGn7&index=4
+ 
+#=====================================	
+#	Installer Git
+#=====================================
+installer git sur debian:
+	sudo apt install git
+
+#=====================================	
+#	Git en ligne de commande
+#=====================================
+Dans terminal VSCode sur quand on est situé dans dossier racine de notre projet:
+Initialiser git:
+	git init
+	
+créer fichier .gitignore dans notre projet et y mettre:
+	node_modules
+	.env
+	
+voir état de nos fichiers:
+	git status
+	
+stager nos fichiers en salle d'attente:
+	git add .		<= "." pour tous les fichiers dans notre dossier courant
+	
+annuler add:
+	git reset HEAD -- .
+	
+faire commit:
+	git commit -m "first commit"
+	
+si le commit ne passe pas car nom manquant faire:
+	git config --global user.name "Cocor_Laptop"
+
+annuler commit
+	git reset --soft HEAD~
+	
+renommer branche principale master -> main
+	git branch -M main
+
+créer une branche "dev":
+		git branch dev
+		
+passer sur une branche:
+	git checkout dev
+	
+merger branch dev sur main:
+	git checkout main     (ou master)
+	git merge -m "Your merge commit message" dev
+	
+	
+#=====================================	
+#	Git visuel
+#=====================================
+Il faut ajouter l'extension git graph sur VSCode
+Dans VSCode cliquer sur Git Graph
+On peut double cliquer sur une version pour la voir de suite dans VScode (c'est comme un checkout)
+
+
+#=====================================	
+#	Git distant  GITHUB
+#=====================================
+ voir vidéo Florian à partir du début :
+ https://www.youtube.com/watch?v=OfS8zLH626A&list=PLwJWw4Pbl4w9bZcu6T57CYsxE95wSzGn7&index=5
+ 
+créer dépot git distant sur github ex: GaleraProject
+
+connecter notre dépot local avec le distant:
+dans notre terminal vscode faire:
+	git remote add origin https://github.com/Cocor31/GaleraProject.git
+
+voir si on est connecté à un dépot distant:
+	git remote -v
+	=> si on voit les fetch et ?
+
+envoyer branch main sur dépot distant
+	git push -u origin main    (ou master)
+
+on peut envoyer d'autre branch sur dépot distant (ex:dev)
+	git push -u origin dev
+	
+récupérer le code sur notre branch
+	git pull origin main       (ou master)
+
+récupérer code distant(surgithub) en local:
+	récupérer l'url sur github
+puis dans terminal se placer dans dossier où on veut le code	
+	git clone url_du_code_git
+	git clone url_du_code_git .  <= le "." permet de ne pas ramener le dossier package  
+
+Récuperer code sans la config git:
+	degit url_du_code_git        <=   installer degit avec : sudo npm i -g degit   
