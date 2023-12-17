@@ -40,12 +40,13 @@ jobs:
           - name: copy via ssh key
             uses: appleboy/scp-action@v0.1.4
             with:
-              host: ${{ secrets.SERVER_HOST }}
+              host: ${{ secrets.HOST }}
               username: ${{ secrets.HOST_USERNAME }}
-              port: 22
+              port: ${{ secrets.PORT }}
               key: ${{ secrets.SSH_KEY }}
-              source: "./docker-compose.yml"
-              target: "."  
+              
+              source: ${{ secrets.SOURCE_DIR }}
+              target: ${{ secrets.TARGET_DIR }} 
 
     pull:
       needs: [push,send_compose]
@@ -57,10 +58,11 @@ jobs:
         - name: Server update
           uses: appleboy/ssh-action@master
           with:
-            host: ${{ secrets.SERVER_HOST }}
-            port: 22
+            host: ${{ secrets.HOST }}
             username: ${{ secrets.HOST_USERNAME }}
+            port: ${{ secrets.PORT }}
             key: ${{ secrets.SSH_KEY }}
+
             script: |
               docker pull cocor31/api_docker
               docker-compose up -d
