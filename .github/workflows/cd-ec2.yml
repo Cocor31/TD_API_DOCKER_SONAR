@@ -4,7 +4,7 @@ on:
     workflow_call
 
 jobs:
-    push:      
+    pushDockerHub:      
       runs-on: ubuntu-latest
 
       steps:
@@ -30,8 +30,8 @@ jobs:
             push: true
             tags: ${{ steps.meta.outputs.tags }}
             labels: ${{ steps.meta.outputs.label }}
-    send_compose:
-        needs: [push]
+    sendComposeOnServer:
+        needs: [pushDockerHub]
         runs-on: ubuntu-latest
     
         steps:
@@ -51,32 +51,24 @@ jobs:
               source: ${{ secrets.SOURCE_DIR }}
               target: ${{ secrets.TARGET_DIR }}  
 
-              # host: ${{ secrets.HOST }}
-              # username: ${{ secrets.HOST_USERNAME }}
-              # port: ${{ secrets.PORT }}
-              # key: ${{ secrets.SSH_KEY }}
-
-              # source: ${{ secrets.SOURCE_DIR }}
-              # target: ${{ secrets.TARGET_DIR }} 
-
-    # pull:
-    #   needs: [push,send_compose]
-    #   runs-on: ubuntu-latest
+    pullServer:
+      needs: [pushDockerHub,sendComposeOnServer]
+      runs-on: ubuntu-latest
       
-    #   steps:
-    #     - name: Checkout
-    #       uses: actions/checkout@v3      
-    #     - name: Server update
-    #       uses: appleboy/ssh-action@master
-    #       with:
-    #         host: ${{ secrets.HOST }}
-    #         username: ${{ secrets.HOST_USERNAME }}
-    #         port: ${{ secrets.PORT }}
-    #         key: ${{ secrets.SSH_KEY }}
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v3      
+        - name: Server update
+          uses: appleboy/ssh-action@master
+          with:
+            host: ${{ secrets.HOST }}
+            username: ${{ secrets.USERNAME }}
+            port: ${{ secrets.PORT }}
+            key: ${{ secrets.SSH_KEY }}
 
-    #         script: |
-    #           docker pull cocor31/api_docker
-    #           docker-compose up -d
+            script: |
+              docker pull cocor31/api_docker
+              docker-compose up -d
                 
           
  

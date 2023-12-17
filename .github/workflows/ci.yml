@@ -54,7 +54,7 @@ jobs:
             # - name: Run User test
             #   run : npm run test:file user_route
     
-    deployDocker:
+    deploy:
         needs: [routage]
         if: ${{ github.event_name == 'push' && github.ref_name == 'main'}}        
         uses: ./.github/workflows/cd-ec2.yml
