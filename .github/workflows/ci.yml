@@ -57,6 +57,6 @@ jobs:
     deploy:
         needs: [routage]
         if: ${{ github.event_name == 'push' && github.ref_name == 'main'}}        
-        uses: ./.github/workflows/cd-ec2.yml
+        uses: ./.github/workflows/cd_docker.yml
         secrets: inherit
 

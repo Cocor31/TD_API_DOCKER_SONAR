@@ -13,13 +13,13 @@ app.use(cors({
 }))
 
 app.use(express.json())
-app.use(express.urlencoded({ extended: true}))
+app.use(express.urlencoded({ extended: true }))
 
 /*** IMPORT ROUTER */
 const user_router = require('./routes/user_r')
 
 /*** MAIN ROUTER */
-app.get('/', (req, res) => res.send(`I'm online. All is OK !  `))
+app.get('/', (req, res) => res.send(`I'm online. All is OK ! Test Deploy `))
 
 app.use('/users', user_router)
 
