@@ -67,6 +67,6 @@ jobs:
             key: ${{ secrets.SSH_KEY }}
 
             script: |
-              docker pull cocor31/api_docker
+              docker pull cocor31/api_docker:main
               docker-compose up -d
  
