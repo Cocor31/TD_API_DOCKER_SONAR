@@ -45,14 +45,14 @@ jobs:
             - name: Install Dependencies
               run: npm i
 
-            # - name: Init database
-            #   run: npm run test:file init_bdd
+            - name: Init database
+              run: npm run test:file init_bdd
 
-            # - name: Run Main Test
-            #   run: npm run test:file main_route   
+            - name: Run Main Test
+              run: npm run test:file main_route   
 
-            # - name: Run User test
-            #   run : npm run test:file user_route
+            - name: Run User test
+              run : npm run test:file user_route
     
     deploy:
         needs: [routage]
