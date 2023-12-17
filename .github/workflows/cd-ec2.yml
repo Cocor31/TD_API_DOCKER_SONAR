@@ -44,32 +44,39 @@ jobs:
           - name: copy via ssh key
             uses: appleboy/scp-action@v0.1.4
             with:
-              host: ${{ secrets.HOST }}
+              host: ${{ secrets.SERVER_HOST }}
               username: ${{ secrets.HOST_USERNAME }}
               port: ${{ secrets.PORT }}
               key: ${{ secrets.SSH_KEY }}
+              source: "./docker-compose.yml"
+              target: "."   
 
-              source: ${{ secrets.SOURCE_DIR }}
-              target: ${{ secrets.TARGET_DIR }} 
+              # host: ${{ secrets.HOST }}
+              # username: ${{ secrets.HOST_USERNAME }}
+              # port: ${{ secrets.PORT }}
+              # key: ${{ secrets.SSH_KEY }}
 
-    pull:
-      needs: [push,send_compose]
-      runs-on: ubuntu-latest
+              # source: ${{ secrets.SOURCE_DIR }}
+              # target: ${{ secrets.TARGET_DIR }} 
+
+    # pull:
+    #   needs: [push,send_compose]
+    #   runs-on: ubuntu-latest
       
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v3      
-        - name: Server update
-          uses: appleboy/ssh-action@master
-          with:
-            host: ${{ secrets.HOST }}
-            username: ${{ secrets.HOST_USERNAME }}
-            port: ${{ secrets.PORT }}
-            key: ${{ secrets.SSH_KEY }}
+    #   steps:
+    #     - name: Checkout
+    #       uses: actions/checkout@v3      
+    #     - name: Server update
+    #       uses: appleboy/ssh-action@master
+    #       with:
+    #         host: ${{ secrets.HOST }}
+    #         username: ${{ secrets.HOST_USERNAME }}
+    #         port: ${{ secrets.PORT }}
+    #         key: ${{ secrets.SSH_KEY }}
 
-            script: |
-              docker pull cocor31/api_docker
-              docker-compose up -d
+    #         script: |
+    #           docker pull cocor31/api_docker
+    #           docker-compose up -d
                 
           
  
