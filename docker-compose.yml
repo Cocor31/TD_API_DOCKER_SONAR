@@ -39,10 +39,10 @@ services:
     restart: always
     expose:
       - "8080"
-  # nginx:
-  #   image: nginx
-  #   volumes:
-  #     - ./nginx:/etc/nginx/conf.d
-  #     - ./frontend:/var/www/front-end
-  #   ports:
-  #     - "80:80"
+  nginx:
+    image: nginx
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./frontend:/var/www/front-end
+    ports:
+      - "80:80"
