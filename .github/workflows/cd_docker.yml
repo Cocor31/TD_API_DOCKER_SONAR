@@ -71,3 +71,5 @@ jobs:
             script: |
               docker pull cocor31/api_docker:main
               docker-compose up -d
+
+              
