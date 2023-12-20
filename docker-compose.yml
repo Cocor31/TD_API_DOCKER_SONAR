@@ -20,8 +20,8 @@ services:
     container_name: api
     image: cocor31/api_docker:main
     restart: always
-    expose:
-      - "23000"
+    ports:
+      - "23000:23000"
     environment:
       DB_HOST: bdd
       DB_NAME: api_docker
