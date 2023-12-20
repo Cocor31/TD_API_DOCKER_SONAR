@@ -5,6 +5,8 @@ const cors = require('cors')
 /*** INIT API */
 const app = express()
 
+const PREFIX = process.env.PREFIX || ""
+
 
 app.use(cors({
     origin: "*",
@@ -19,9 +21,9 @@ app.use(express.urlencoded({ extended: true }))
 const user_router = require('./routes/user_r')
 
 /*** MAIN ROUTER */
-app.get('/', (req, res) => res.send(`I'm online. All is OK ! `))
+app.get(PREFIX + '/', (req, res) => res.send(`I'm online. All is OK ! `))
 
-app.use('/users', user_router)
+app.use(PREFIX + '/users', user_router)
 
 app.all('*', (req, res) => res.status(501).send('What the hell are you doing !?!'))
 

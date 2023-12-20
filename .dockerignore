@@ -2,6 +2,7 @@ node_modules
 mysql
 coverage
 scripts
+nginx
 documents
 .scannerwork
 test

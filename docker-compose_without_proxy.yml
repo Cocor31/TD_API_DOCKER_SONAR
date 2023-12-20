@@ -20,8 +20,8 @@ services:
     container_name: api
     image: cocor31/api_docker:main
     restart: always
-    expose:
-      - "23000"
+    ports:
+      - 23000:23000
     environment:
       DB_HOST: bdd
       DB_NAME: api_docker
@@ -36,13 +36,5 @@ services:
     container_name: adminer
     image: adminer
     restart: always
-    expose:
-      - "8080"
-
-  nginx:
-    image: nginx
-    volumes:
-      - ./nginx:/etc/nginx/conf.d
-    #   - ./front-end:/var/www/front-end
     ports:
-      - "80:80"
+      - 8080:8080
