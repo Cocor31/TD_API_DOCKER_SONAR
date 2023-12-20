@@ -31,6 +31,7 @@ jobs:
             tags: ${{ steps.meta.outputs.tags }}
             labels: ${{ steps.meta.outputs.label }}
     sendComposeOnServer:
+        if: ${{ !contains(github.event.head_commit.message, '#NoDeploy')}}
         needs: [pushDockerHub]
         runs-on: ubuntu-latest
     
@@ -52,6 +53,7 @@ jobs:
               target: ${{ secrets.TARGET_DIR }}  
 
     pullServer:
+      if: ${{ !contains(github.event.head_commit.message, '#NoDeploy')}}
       needs: [pushDockerHub,sendComposeOnServer]
       runs-on: ubuntu-latest
       
