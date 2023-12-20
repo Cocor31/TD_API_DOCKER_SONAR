@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>API Request Example</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.1/axios.min.js"></script>
 </head>
 
 <body>
@@ -21,6 +22,23 @@
                     .catch(error => console.error('Error fetching users:', error));
             }
 
+            async function fetchUsersAxios() {
+                try {
+                    const res = await axios.get("http://localhost/api/users");
+                    console.log("JSON data from API ==>", res.data);
+                    displayUsers(res.data)
+                } catch (error) {
+                    // handle error
+                }
+                // axios.get("http://localhost/api/users").then(function (response) {
+                //     response.data.forEach(item => { console.log(item) })
+                // console.log(response.data)
+                // console.log(JSON.parse(response.data))
+                // console.log(JSON.parse(response))
+                // do whatever you want if console is [object object] then stringify the response
+                // })
+            }
+
             // Function to display the retrieved users
             function displayUsers(users) {
                 const userList = document.getElementById('userList');
@@ -33,7 +51,7 @@
             }
 
             // Call the fetchUsers function when the page is loaded
-            fetchUsers();
+            fetchUsersAxios();
         });
     </script>
 </body>
