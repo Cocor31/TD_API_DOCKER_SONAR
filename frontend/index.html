@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Request Example</title>
+</head>
+
+<body>
+    <h1>User List</h1>
+    <ul id="userList"></ul>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Function to make the API request
+            function fetchUsers() {
+                fetch('http://localhost/api/users')
+                    .then(response => response.json())
+                    .then(data => displayUsers(data))
+                    .catch(error => console.error('Error fetching users:', error));
+            }
+
+            // Function to display the retrieved users
+            function displayUsers(users) {
+                const userList = document.getElementById('userList');
+                console.log(users)
+                users.data.forEach(user => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${user.prenom} ${user.nom} (ID: ${user.id})`;
+                    userList.appendChild(listItem);
+                });
+            }
+
+            // Call the fetchUsers function when the page is loaded
+            fetchUsers();
+        });
+    </script>
+</body>
+
+</html>
