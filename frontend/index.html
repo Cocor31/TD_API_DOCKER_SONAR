@@ -16,10 +16,8 @@
         document.addEventListener("DOMContentLoaded", function () {
             // Function to make the API request
             function fetchUsers() {
-                console.log('host_url: ' + window.location.host)
-                console.log('host_protocol: ' + window.location.protocol)
-                console.log('complete_url: ' + window.location.protocol + "//" + window.location.host)
-                fetch('http://localhost/api/users')
+                const host = window.location.protocol + "//" + window.location.host
+                fetch(host + '/api/users')
                     .then(response => response.json())
                     .then(data => displayUsers(data))
                     .catch(error => console.error('Error fetching users:', error));
@@ -58,7 +56,7 @@
             }
 
             // Call the fetchUsers function when the page is loaded
-            fetchUsersAxios();
+            fetchUsers();
         });
     </script>
 </body>
