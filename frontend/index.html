@@ -16,6 +16,9 @@
         document.addEventListener("DOMContentLoaded", function () {
             // Function to make the API request
             function fetchUsers() {
+                console.log('host_url: ' + window.location.host)
+                console.log('host_protocol: ' + window.location.protocol)
+                console.log('complete_url: ' + window.location.protocol + "//" + window.location.host)
                 fetch('http://localhost/api/users')
                     .then(response => response.json())
                     .then(data => displayUsers(data))
@@ -24,7 +27,11 @@
 
             async function fetchUsersAxios() {
                 try {
-                    const res = await axios.get("http://localhost/api/users");
+                    console.log('host_url: ' + window.location.host)
+                    console.log('host_protocol: ' + window.location.protocol)
+                    console.log('complete_url: ' + window.location.protocol + "//" + window.location.host)
+                    const host = window.location.protocol + "//" + window.location.host
+                    const res = await axios.get(host + "/api/users");
                     console.log("JSON data from API ==>", res.data);
                     displayUsers(res.data)
                 } catch (error) {

@@ -49,8 +49,10 @@ jobs:
               username: ${{ secrets.USERNAME }}
               port: ${{ secrets.PORT }}
               key: ${{ secrets.SSH_KEY }}
-              source: ${{ secrets.SOURCE_DIR }}
-              target: ${{ secrets.TARGET_DIR }}  
+              source: "./docker-compose.yml,frontend/*"
+              target: "."  
+              # source: ${{ secrets.SOURCE_DIR }}
+              # target: ${{ secrets.TARGET_DIR }}  
 
     pullServer:
       if: ${{ !contains(github.event.head_commit.message, '#NoDeploy')}}
