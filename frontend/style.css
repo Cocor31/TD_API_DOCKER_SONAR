@@ -1,0 +1,25 @@
+/*********/
+/*GENERAL*/
+/*********/
+
+/* body {
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+} */
+
+
+/******/
+/*Main*/
+/******/
+
+
+#section_userlist {
+    li {
+        display: flex;
+        flex-direction: row;
+
+        button {
+            margin-left: 6px;
+        }
+    }
+}

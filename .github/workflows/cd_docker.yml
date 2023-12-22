@@ -30,7 +30,7 @@ jobs:
             push: true
             tags: ${{ steps.meta.outputs.tags }}
             labels: ${{ steps.meta.outputs.label }}
-    sendComposeOnServer:
+    sendFilesToServer:
         if: ${{ !contains(github.event.head_commit.message, '#NoDeploy')}}
         needs: [pushDockerHub]
         runs-on: ubuntu-latest
@@ -56,7 +56,7 @@ jobs:
 
     pullServer:
       if: ${{ !contains(github.event.head_commit.message, '#NoDeploy')}}
-      needs: [pushDockerHub,sendComposeOnServer]
+      needs: [pushDockerHub,sendFilesToServer]
       runs-on: ubuntu-latest
       
       steps:

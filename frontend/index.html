@@ -1,64 +1,65 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>API Request Example</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.1/axios.min.js"></script>
+    <link href="./style.css" rel="stylesheet" />
 </head>
 
 <body>
-    <h1>User List</h1>
-    <ul id="userList"></ul>
+    <header>
+        <h1>API Users Client</h1>
+    </header>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Function to make the API request
-            function fetchUsers() {
-                const host = window.location.protocol + "//" + window.location.host
-                fetch(host + '/api/users')
-                    .then(response => response.json())
-                    .then(data => displayUsers(data))
-                    .catch(error => console.error('Error fetching users:', error));
-            }
+    <section id="section_userlist">
+        <h2>User List</h2>
+        <ul id="userList"></ul>
+    </section>
 
-            async function fetchUsersAxios() {
-                try {
-                    console.log('host_url: ' + window.location.host)
-                    console.log('host_protocol: ' + window.location.protocol)
-                    console.log('complete_url: ' + window.location.protocol + "//" + window.location.host)
-                    const host = window.location.protocol + "//" + window.location.host
-                    const res = await axios.get(host + "/api/users");
-                    console.log("JSON data from API ==>", res.data);
-                    displayUsers(res.data)
-                } catch (error) {
-                    // handle error
-                }
-                // axios.get("http://localhost/api/users").then(function (response) {
-                //     response.data.forEach(item => { console.log(item) })
-                // console.log(response.data)
-                // console.log(JSON.parse(response.data))
-                // console.log(JSON.parse(response))
-                // do whatever you want if console is [object object] then stringify the response
-                // })
-            }
+    <section id="section_adduser">
+        <h2>Add User</h2>
+        <form class="add_user_form">
+            <div>
+                <label for="firstName">Prénom: </label>
+                <input type="text" name="firstName" id="firstName" required>
+            </div>
+            <div>
+                <label for="lastName">Nom: </label>
+                <input type="text" name="lastName" id="lastName" required>
+            </div>
+            <div>
+                <input type="button" value="Ajouter" id="submit_add" onclick="addUser()">
+            </div>
 
-            // Function to display the retrieved users
-            function displayUsers(users) {
-                const userList = document.getElementById('userList');
-                console.log(users)
-                users.data.forEach(user => {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = `${user.prenom} ${user.nom} (ID: ${user.id})`;
-                    userList.appendChild(listItem);
-                });
-            }
+        </form>
+    </section>
 
-            // Call the fetchUsers function when the page is loaded
-            fetchUsers();
-        });
-    </script>
+    <section id="section_patchuser">
+        <h2>Patch User</h2>
+        <form class="patch_user_form">
+            <div>
+                <label for="id_user">Id: </label>
+                <input type="text" name="id_user" id="id_user" required>
+            </div>
+            <div>
+                <label for="firstName">Prénom: </label>
+                <input type="text" name="firstName" id="firstName" required>
+            </div>
+            <div>
+                <label for="lastName">Nom: </label>
+                <input type="text" name="lastName" id="lastName" required>
+            </div>
+            <div>
+                <input type="button" value="Modifier" id="submit_patch" onclick="alterUser()">
+            </div>
+
+        </form>
+    </section>
+
+
+    <script src="./index.js"></script>
 </body>
 
 </html>

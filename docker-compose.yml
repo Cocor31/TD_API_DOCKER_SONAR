@@ -8,8 +8,8 @@ services:
     restart: always
     volumes:
       - ./mysql:/var/lib/mysql
-    ports:
-      - 3306:3306
+    expose:
+      - "3306"
     environment:
       MARIADB_ROOT_PASSWORD: toor
       MARIADB_DATABASE: api_docker
@@ -20,8 +20,8 @@ services:
     container_name: api
     image: cocor31/api_docker:main
     restart: always
-    ports:
-      - 23000:23000
+    expose:
+      - "23000"
     environment:
       DB_HOST: bdd
       DB_NAME: api_docker
@@ -46,3 +46,6 @@ services:
       - ./frontend:/var/www/front-end
     ports:
       - "80:80"
+    depends_on:
+      api:
+        condition: service_started
