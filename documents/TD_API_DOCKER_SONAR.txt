@@ -962,6 +962,33 @@ services:
 
 
 
+#=====================================	
+#	Ne pas exposer son API
+#=====================================
+
+Faire discuter Front et Back dans Docker et n'exposer que le Front
+
+https://blog.devgenius.io/how-to-correctly-build-a-multi-environment-react-app-6715ee8fcc78
+
+
+#=====================================	
+#	Montage en Micro Service
+#=====================================
+exemple montage micro service api cocktail Florian:
+https://github.com/Cesi-64/pca_cloud/tree/master/backend
+
+
+#=====================================	
+#	Montage NGINX Proxy avec PM2
+#=====================================
+Exemple montage Api avec Proxy grâce à NGINX et PM2. Sans Docker.
+howtoforge.com/how-to-setup-nginx-as-frontend-server-for-nodejs-on-debian-10/
+
+#=====================================	
+#	Montage NGINX Proxy avec certificat SSL
+#=====================================
+Nginx proxy + certificat SSL
+https://github.com/ChristianLempa/videos/tree/main/nginx-reverseproxy
 
 
 #=====================================	
@@ -1142,4 +1169,5 @@ Sauvegarde BDD sur drive
 #=====================================
 enlever "documents" de .gitignore
 mettre les fichiers .txt
+
 
