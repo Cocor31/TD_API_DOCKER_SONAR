@@ -134,8 +134,26 @@ créer les fichiers tests:
 
 
 
+#=====================================	
+#	Génération Tests Auto et JSdoc par AI VsCode (CodiumAI)
+#=====================================
+--------------------------	
+   Mettre Codium dans VScode
+--------------------------
+L'extension CodiumAI permet de générer des tests unitaire et commentaires ainsi que la JSdoc
 
+Dans VScode installer extension "CodiumAI - Integrity Agent ..."
 
+--------------------------	
+   Générer JSdoc avec les commentaires dans Code
+--------------------------
+Installer généralement JSdoc:
+	npm install -g jsdoc
+	
+Lancer génération JSdoc sur un seul fichier.js:
+	jsdoc ./controller/User.js
+	
+	
 
 #=====================================	
 #	SONAR
@@ -278,13 +296,26 @@ app.use(cors({ origin :"localhost"
 --------------------------	
 npm i helmet
 
-app.use(helmet.hidePowerBy .... ???????  <= A corriger
+app.use(helmet.hidePoweredBy .... ???????  <= A corriger
 
 --------------------------		
 	Expliquer à Sonar où sont les tests
 --------------------------	
-... voir vidéo
+... voir vidéo BDD_SONAR_DOCKER.mkv à partir de 1:20:00
+
+dans fichier "sonar-project.properties" ajouter sous #source:
+	sonar.tests=test     <= "test" représente le dossier de test dans notre projet
 	
+puis ajouter:
+	# coverage reporting
+	sonar.javascript.lcov.reportPaths=coverage/lcov.info     <=  "coverage/lcov.info" est l'endroit où vont les résultats de notre test taux de couverture lancer avec jest
+
+on peut relancer un scan avec la commande :
+	il faut aun préalable avoir lancer le test jest avec le taux de couverture (script npm run test:cov)
+	./scan.sh
+		
+dans browser sur http://localhost:9000/
+on doit voir le taux de couverture qui remonte
 
 --------------------------	
  Updater .gitignore
@@ -607,7 +638,7 @@ Ajouter les variables Server (ici instance AWS EC2)
 	USERNAME = user avec les droits sur le serveur pour connexion ssh (ex:admin)
 	PORT= port ssh de connexion à notre server (ex: 22)
 	SSH_KEY = .pem sur PC
-	SOURCE_DIR = ex: "api/*" ou "./docker-compose.yml"
+	SOURCE_DIR = ex: "api/*" ou "./docker-compose.yml,frontend/*,nginx/*"
 	TARGET_DIR = ex: "."
 
 
@@ -795,6 +826,9 @@ pour lancer lazydocker entrer commande:
 #=====================================	
 #	Vérif Fonctionnement API sur AWS EC2
 #=====================================
+Il peut y avoir un problème lors de l'éxécution workflow lors de la copie des fichiers sur server. Ceci peut etre un problème de droit sur les dossiers et fichiers 
+déja créés sur le serveur avec pour propriétaire "root" et non "admin". Pour que gitHub puisse exécuter la copie, il faudra soit changer le propriétaire root -> admin, 
+soit supprimer les fichiers ou dossiers pour les laisser se recréer avec le user admin par github action.
 
 Aller sur l'adresse
 	http://adresse_server:23000/
@@ -809,7 +843,143 @@ Adminer:
 Un dossier mysql (volume docker) doit se créer sur notre instance
 
 
+#=====================================	
+#	Mise en place Reverse Proxy Nginx
+#=====================================
+créer un dossier "nginx" avec un fichier "nginx.conf" à l'intérieur (le faire sur serveur directement ou dans le projet avec une copie sur serveur cible dans le workflow)
+Dans le fichier "nginx.conf" mettre le contenu suivant:
+---------------------------------------------------------------------
+server{
+        listen 80;
+        server_name  localhost;
 
+        location / {
+                root /var/www/front-end;
+                }
+
+        location /adminer {
+                proxy_pass http://adminer:8080;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection 'upgrade';
+                proxy_set_header Host $host;
+                proxy_cache_bypass $http_upgrade;
+                }
+
+        location /api {
+                proxy_pass http://api:23000;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection 'upgrade';
+                proxy_set_header Host $host;
+                proxy_cache_bypass $http_upgrade;
+                }
+}					
+---------------------------------------------------------------------
+
+
+Il faut mettre aussi les ports 23000 (api) et 8080 (adminer) en "expose" dans le docker file pour qu'ils ne soient pas accessibles de l'exterieur du docker
+
+
+#=====================================	
+#	Ajout de Prefix pour le chemin de l'Api
+#===================================== 
+On modifie le routage dans app.js pour prendre en compte une variable d'environnement PREFIX qui pourra être initialiséé à "/api" dans le Docker compose
+et aussi dans le fichier "nginx.conf" pour la location "/api" qui pointera vers http://api:23000
+
+
+
+
+
+#=====================================	
+#	FrontEnd
+#===================================== 
+Ajout d'un front-end qui interagit avec l'API
+
+doc get host current url path
+https://css-tricks.com/snippets/javascript/get-url-and-url-parts-in-javascript/
+
+
+
+Ne pas oublier de mettre à jour le workflow "cd_docker.yml" pour effectuer la copie du front-end
+dans le step "sendFilesToServer" modifier
+	source: "./docker-compose.yml,frontend/*,nginx/*"
+	
+ou bien, Changer variable SOURCE_DIR dans GitHub action pour copier le dossier frontend
+SOURCE_DIR = "./docker-compose.yml,frontend/*,nginx/*"
+
+Mettre à jour le docker compose pour ajouter le Nginx (reverse proxy + frontend)
+---------------------------------------------------------------------
+version: '3.1'
+
+services:
+
+  bdd:
+    container_name: bdd
+    image: mariadb:latest
+    restart: always
+    volumes:
+      - ./mysql:/var/lib/mysql
+    ports:
+      - 3306:3306
+    environment:
+      MARIADB_ROOT_PASSWORD: toor
+      MARIADB_DATABASE: api_docker
+      MARIADB_USER: roger
+      MARIADB_PASSWORD: regor
+
+  api:
+    container_name: api
+    image: cocor31/api_docker:main
+    restart: always
+    ports:
+      - 23000:23000
+    environment:
+      DB_HOST: bdd
+      DB_NAME: api_docker
+      DB_USER: roger
+      DB_PASS: regor
+      SERVER_PORT: 23000
+      PREFIX: /api
+    depends_on:
+      bdd:
+        condition: service_started
+
+  adminer:
+    container_name: adminer
+    image: adminer
+    restart: always
+    expose:
+      - "8080"
+  nginx:
+    image: nginx
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./frontend:/var/www/front-end
+    ports:
+      - "80:80"
+---------------------------------------------------------------------
+
+
+
+
+
+#=====================================	
+#	Récap .dockerignore
+#=====================================
+Ajouter dans .dockerignore:
+node_modules
+mysql
+coverage
+scripts
+nginx
+documents
+.scannerwork
+test
+scan.sh
+sonar-project.properties
+docker-compose.yml
+Dockerfile
 
 #=====================================	
 #	Récap .gitignore
@@ -819,6 +989,8 @@ node_modules
 .env
 mysql
 .scannerwork
+scripts/opt
+coverage/
 
 #=====================================	
 #	Dépot florian correction TD
@@ -828,12 +1000,142 @@ récupérer dépot git: https://github.com/Floriansp40/toulouse_mardi.git
 
 degit https://github.com/Floriansp40/toulouse_mardi.git
 
+#=====================================	
+#		ViteJs
+#=====================================
+Vite JS permet de créer rapidement une application React
+il suffit de seplacer dans un dossier depuis terminal debian et entrer la commande:
+	npm create vite@latest
+	=> puis donner le nom de l'application
+	=> react
+	=> variant: javascript
+
+#=====================================	
+#	Deploiement FrontEnd sur Versel (créer site internet)
+#=====================================
+Il est possible d'utiliser https://vercel.com/ pour builder et deployer directement un projet gitHub (React par exemple)
+Le site internet à un nom de domaine propre à versel. Il est possible d'acheter un nom de domaine sur versel.
+C'est utile pour de petit projet.
+Pour des grands projets, mieux vaut les mettre sur serveur.
+
+On peut aussi utiliser netify.com pour deployer son site depuis un dépot gitHub
+guide netify:
+https://www.netlify.com/blog/2016/09/29/a-step-by-step-guide-deploying-on-netlify/
+
 
 #=====================================	
 #	Acceder aux fichiers WSL depuis Windows
 #=====================================
 Dans explorateur Windows
 	\\wsl$\Debian
+
+Connetion server en ssh depuis powershell
+	ssh -i ".\.ssh\amazon_ssh.pem" admin@IP_public_server
+
+
+
+
+#=====================================	
+#	BackUp BDD externalisée
+#=====================================
+voir vidéo Florian du 20/11/23
+voir cours Classroom : https://classroom.google.com/w/NjM2Mjk4NTY3MDc1/t/all
+
+Faire un simple dump dans Debian:
+	mysqldump -u admin -p roger > mysql_backup.sql
+
+Voir script Florian
+
+--------------------------		
+	Connexion Gdrive
+--------------------------
+faire procedure de connexion au drive avec mon serveur (Debian)
+installer gdrive sur mon Debian
+doc: https://github.com/glotlabs/gdrive
+
+création api credentials:
+https://github.com/glotlabs/gdrive/blob/main/docs/create_google_api_credentials.md
+
+--------------------------		
+	Script BackUp BDD
+--------------------------
+créer script qui dump la bdd puis compresse puis envoie sur google drive avec commande gdrive
+	un script est en .sh  ex: mysql_backup.sh
+
+exemple script florian à mettre sur serveur où est la bdd:
+-------------------------------------------------
+#!/bin/bash
+#*********************************************************************
+# Fichier de sauvegarde de la base de donnees - Exemple
+#
+# Version : 1.0
+# Date    : 20-11-2023
+#
+# ********************************************************************
+
+# Variable de la base de donnees
+dbHost="127.0.0.1"
+dbPort="3306"
+dbName="world"
+dbUser="admin"
+dbPawd="nimda"
+
+# Dossier pour la sauvegarde
+dbBackup="/home/florian/mysql"
+
+
+# ********************************************************************
+# Debut de la sauvegarde
+
+# Recuperation de la date
+DATE=`date +%Y-%m-%d`
+/bin/touch ${dbBackup}/mysql_galera_${DATE}.sql.gz
+
+# Sauvegarde de la base
+mysqldump -h $dbHost -u $dbUser -p$dbPawd --port $dbPort --opt $dbName | gzip -9 > ${dbBackup}/mysql_galera_${DATE}.sql.gz
+
+# Nettoyage des vieux fichiers de sauvegarde
+find ${dbBackup}/mysql_galera_*.sql.gz -type f -mtime +4 -delete
+
+# Export sur le google drive
+/home/florian/gdrive files upload ${dbBackup}/mysql_galera_${DATE}.sql.gz
+
+# Fin
+exit 0
+------------------------------------------------- 
+
+
+--------------------------		
+	Tache planifiée avec Crontab
+--------------------------
+crontab doc:
+https://linuxtricks.fr/wiki/cron-et-crontab-le-planificateur-de-taches
+
+cron schedule expressions:
+https://crontab.guru/#5,10_4_20_12_7
+
+voir pdf pour expression crontab:
+
+
+On peut ensuite lancer un routine avec crontab:
+	créer fichier log
+	log touch log_galera_backup.log
+Entrer dans crontab sur terminal debian: https://classroom.google.com/w/NjM2Mjk4NTY3MDc1/t/all
+		crontab -e
+Dans crontab ecrire:
+25 **** /home/florian/mysql_backup.sh > /home/florian/log_galera_backup.log
+
+
+taches automatisées:  crontab sur linux
+
+
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Manque expliquer à Sonar où sont les tests  Voir vidéo de Florian sur youtube ou BDD_TD_SONAR-partie1.mkv et BDD_TD_SONAR-partie2.mkv
+Sauvegarde BDD sur drive
+
+
 
 #=====================================	
 #	!!!!!!!!!!!!! Penser à ajouter les documents dans GitHub
